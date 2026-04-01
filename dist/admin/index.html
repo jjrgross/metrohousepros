@@ -109,6 +109,18 @@
     .status-pending   { background: #fef3c7; color: #92400e; }
     .status-sold      { background: #fee2e2; color: #991b1b; }
     .empty { text-align: center; padding: 40px; color: var(--muted); background: white; border: 1px solid var(--border); border-radius: 10px; }
+    .btn-edit { background: #f1f5f9; color: var(--text); font-size: 0.78rem; padding: 5px 12px; border: 1px solid var(--border); }
+    .btn-edit:hover { background: #e2e8f0; opacity: 1; }
+
+    /* EDIT MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 14px; padding: 28px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--muted); line-height: 1; padding: 0 4px; }
+    .modal-close:hover { color: var(--text); }
+
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-grid .full { grid-column: 1; } .deal-row { flex-wrap: wrap; } }
   </style>
 </head>
@@ -127,6 +139,62 @@
     <input type="password" id="pwInput" placeholder="Password" />
     <button onclick="tryLogin()">Sign In</button>
     <div class="login-error" id="loginError">Incorrect password.</div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Edit Deal</h2>
+      <button class="modal-close" onclick="closeEdit()">×</button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" id="editId" />
+      <div class="form-grid">
+        <div class="full">
+          <label>Property Address *</label>
+          <input type="text" id="editAddress" required />
+        </div>
+        <div>
+          <label>Asking Price *</label>
+          <input type="text" id="editPrice" required />
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="editStatus">
+            <option value="Available">Available</option>
+            <option value="Pending">Pending</option>
+            <option value="Sold">Sold</option>
+          </select>
+        </div>
+        <div>
+          <label>Beds</label>
+          <input type="text" id="editBeds" />
+        </div>
+        <div>
+          <label>Baths</label>
+          <input type="text" id="editBaths" />
+        </div>
+        <div>
+          <label>Sq Ft</label>
+          <input type="text" id="editSqft" />
+        </div>
+        <div class="full">
+          <label>Photo URL (optional)</label>
+          <input type="url" id="editImageUrl" />
+        </div>
+        <div class="full">
+          <label>Description / Property Notes</label>
+          <textarea id="editDescription"></textarea>
+        </div>
+      </div>
+      <div class="form-actions" style="display:flex;gap:10px;align-items:center">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-edit" onclick="closeEdit()">Cancel</button>
+      </div>
+      <div class="msg" id="editMsg"></div>
+    </form>
   </div>
 </div>
 
@@ -230,14 +298,29 @@
     });
   }
 
+  async function deleteDeal(id) {
+    if (!confirm('Delete this deal? This cannot be undone.')) return;
+    const res = await fetch('/api/deals?manage=metro99&id='+id, { method: 'DELETE' });
+    if (res.ok) {
+      document.getElementById('row-'+id)?.remove();
+      if (!document.querySelectorAll('[id^="row-"]').length) {
+        document.getElementById('dealsList').innerHTML = '<div class="empty">No deals yet. Add one above.</div>';
+      }
+    } else {
+      alert('Failed to delete. Please try again.');
+    }
+  }
+
+  let _deals = [];
+
   async function loadDeals() {
-    const res = await fetch('/api/deals').then(r=>r.json());
+    _deals = await fetch('/api/deals').then(r=>r.json());
     const list = document.getElementById('dealsList');
-    if (!res.length) {
+    if (!_deals.length) {
       list.innerHTML = '<div class="empty">No deals yet. Add one above.</div>';
       return;
     }
-    list.innerHTML = res.map(d => `
+    list.innerHTML = _deals.map(d => `
       <div class="deal-row" id="row-${d.id}">
         <div class="deal-thumb">
           ${d.imageUrl ? `<img src="${esc(d.imageUrl)}" onerror="this.parentElement.textContent='🏠'">` : '🏠'}
@@ -252,23 +335,70 @@
         </div>
         <div class="deal-actions">
           <button class="btn btn-share" id="share-${d.id}" onclick="copyDealLink('${d.id}')">🔗 Share</button>
+          <button class="btn btn-edit" onclick="openEdit('${d.id}')">Edit</button>
           <button class="btn btn-danger" onclick="deleteDeal('${d.id}')">Delete</button>
         </div>
       </div>`).join('');
   }
 
-  async function deleteDeal(id) {
-    if (!confirm('Delete this deal? This cannot be undone.')) return;
-    const res = await fetch('/api/deals?manage=metro99&id='+id, { method: 'DELETE' });
-    if (res.ok) {
-      document.getElementById('row-'+id)?.remove();
-      if (!document.querySelectorAll('[id^="row-"]').length) {
-        document.getElementById('dealsList').innerHTML = '<div class="empty">No deals yet. Add one above.</div>';
-      }
-    } else {
-      alert('Failed to delete. Please try again.');
-    }
+  function openEdit(id) {
+    const d = _deals.find(x => x.id === id);
+    if (!d) return;
+    document.getElementById('editId').value        = d.id;
+    document.getElementById('editAddress').value   = d.address || '';
+    document.getElementById('editPrice').value     = d.price || '';
+    document.getElementById('editStatus').value    = d.status || 'Available';
+    document.getElementById('editBeds').value      = d.beds || '';
+    document.getElementById('editBaths').value     = d.baths || '';
+    document.getElementById('editSqft').value      = d.sqft || '';
+    document.getElementById('editImageUrl').value  = d.imageUrl || '';
+    document.getElementById('editDescription').value = d.description || '';
+    document.getElementById('editMsg').className   = 'msg';
+    document.getElementById('editModal').classList.add('open');
   }
+
+  function closeEdit() {
+    document.getElementById('editModal').classList.remove('open');
+  }
+
+  document.getElementById('editModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('editModal')) closeEdit();
+  });
+
+  document.getElementById('editForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = document.getElementById('editMsg');
+    msg.className = 'msg';
+    const payload = {
+      id:          document.getElementById('editId').value,
+      address:     document.getElementById('editAddress').value.trim(),
+      price:       document.getElementById('editPrice').value.trim(),
+      beds:        document.getElementById('editBeds').value.trim(),
+      baths:       document.getElementById('editBaths').value.trim(),
+      sqft:        document.getElementById('editSqft').value.trim(),
+      status:      document.getElementById('editStatus').value,
+      imageUrl:    document.getElementById('editImageUrl').value.trim(),
+      description: document.getElementById('editDescription').value.trim(),
+    };
+    try {
+      const res = await fetch('/api/deals?manage=metro99', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        closeEdit();
+        loadDeals();
+      } else {
+        const err = await res.json();
+        msg.textContent = err.error || 'Failed to save.';
+        msg.className = 'msg error';
+      }
+    } catch {
+      msg.textContent = 'Network error. Please try again.';
+      msg.className = 'msg error';
+    }
+  });
 
   document.getElementById('dealForm').addEventListener('submit', async e => {
     e.preventDefault();

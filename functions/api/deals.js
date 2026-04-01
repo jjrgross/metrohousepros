@@ -53,6 +53,22 @@ export async function onRequestPost(context) {
   return json(newDeal, 201);
 }
 
+export async function onRequestPut(context) {
+  const url = new URL(context.request.url);
+  if (!isAdmin(url)) return json({ error: 'Unauthorized' }, 401);
+
+  const updates = await context.request.json();
+  if (!updates.id) return json({ error: 'id is required' }, 400);
+
+  const deals = (await context.env.DEALS_KV.get('deals', { type: 'json' })) || [];
+  const idx = deals.findIndex((d) => d.id === updates.id);
+  if (idx === -1) return json({ error: 'Not found' }, 404);
+
+  deals[idx] = { ...deals[idx], ...updates };
+  await context.env.DEALS_KV.put('deals', JSON.stringify(deals));
+  return json(deals[idx]);
+}
+
 export async function onRequestDelete(context) {
   const url = new URL(context.request.url);
   if (!isAdmin(url)) return json({ error: 'Unauthorized' }, 401);
