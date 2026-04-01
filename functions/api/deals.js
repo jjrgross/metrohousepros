@@ -15,7 +15,16 @@ function isAdmin(url) {
 }
 
 export async function onRequestGet(context) {
+  const url = new URL(context.request.url);
+  const id = url.searchParams.get('id');
   const deals = (await context.env.DEALS_KV.get('deals', { type: 'json' })) || [];
+
+  if (id) {
+    const deal = deals.find((d) => d.id === id);
+    if (!deal) return json({ error: 'Not found' }, 404);
+    return json(deal);
+  }
+
   return json(deals);
 }
 

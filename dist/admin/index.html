@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Metro House Pros</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0f2557;
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --light: #f8fafc;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --red: #ef4444;
+      --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--text); min-height: 100vh; }
+    header { background: var(--navy); color: white; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
+    header .brand { font-size: 1.25rem; font-weight: 700; }
+    header .brand span { color: var(--green); }
+
+    /* LOGIN SCREEN */
+    .login-screen {
+      min-height: calc(100vh - 62px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .login-box .lock { font-size: 2.5rem; margin-bottom: 14px; }
+    .login-box h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .login-box p { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+    .login-box input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .login-box input:focus { outline: none; border-color: var(--navy); }
+    .login-box button {
+      width: 100%;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .login-box button:hover { background: #1a3a7a; }
+    .login-error { color: var(--red); font-size: 0.85rem; margin-top: 10px; display: none; }
+
+    /* ADMIN SCREEN */
+    .admin-screen { display: none; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 32px 20px; }
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 28px; display: flex; align-items: center; gap: 10px; }
+    .badge { font-size: 0.7rem; background: var(--navy); color: white; padding: 3px 10px; border-radius: 99px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* FORM */
+    .add-panel { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 40px; box-shadow: var(--card-shadow); }
+    .add-panel h2 { font-size: 1rem; font-weight: 700; margin-bottom: 18px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; font-size: 0.8rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; font-size: 0.92rem; color: var(--text); background: white; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); }
+    textarea { resize: vertical; min-height: 80px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: none; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--green); color: white; }
+    .btn-danger { background: var(--red); color: white; font-size: 0.78rem; padding: 5px 12px; }
+    .btn-share { background: var(--navy); color: white; font-size: 0.78rem; padding: 5px 12px; }
+    .form-actions { margin-top: 18px; }
+    .msg { padding: 10px 14px; border-radius: 7px; font-size: 0.87rem; margin-top: 14px; display: none; }
+    .msg.success { background: #dcfce7; color: #15803d; display: block; }
+    .msg.error   { background: #fee2e2; color: #b91c1c; display: block; }
+
+    /* DEALS TABLE */
+    .deals-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; font-size: 0.8rem; }
+    .deal-row { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; box-shadow: var(--card-shadow); }
+    .deal-thumb { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: linear-gradient(135deg, #1e3a8a 0%, #0f2557 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); font-size: 1.4rem; overflow: hidden; }
+    .deal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .deal-info { flex: 1; min-width: 0; }
+    .deal-info .address { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .deal-info .price { font-weight: 800; color: var(--navy); font-size: 1rem; }
+    .deal-info .meta { color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+    .deal-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+    .deal-status { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; }
+    .status-available { background: #dcfce7; color: #15803d; }
+    .status-pending   { background: #fef3c7; color: #92400e; }
+    .status-sold      { background: #fee2e2; color: #991b1b; }
+    .empty { text-align: center; padding: 40px; color: var(--muted); background: white; border: 1px solid var(--border); border-radius: 10px; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-grid .full { grid-column: 1; } .deal-row { flex-wrap: wrap; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">Metro House <span>Pros</span></div>
+  <span style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Admin Panel</span>
+</header>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="lock">🔒</div>
+    <h2>Admin Access</h2>
+    <p>Enter your password to manage deals.</p>
+    <input type="password" id="pwInput" placeholder="Password" />
+    <button onclick="tryLogin()">Sign In</button>
+    <div class="login-error" id="loginError">Incorrect password.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-screen" id="adminScreen">
+  <div class="container">
+    <h1>Manage Deals <span class="badge">Admin</span></h1>
+
+    <div class="add-panel">
+      <h2>Add New Property</h2>
+      <form id="dealForm">
+        <div class="form-grid">
+          <div class="full">
+            <label>Property Address *</label>
+            <input type="text" id="address" placeholder="123 Main St, Kenosha, WI 53140" required />
+          </div>
+          <div>
+            <label>Asking Price *</label>
+            <input type="text" id="price" placeholder="$149,000" required />
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="status">
+              <option value="Available">Available</option>
+              <option value="Pending">Pending</option>
+              <option value="Sold">Sold</option>
+            </select>
+          </div>
+          <div>
+            <label>Beds</label>
+            <input type="text" id="beds" placeholder="3" />
+          </div>
+          <div>
+            <label>Baths</label>
+            <input type="text" id="baths" placeholder="2" />
+          </div>
+          <div>
+            <label>Sq Ft</label>
+            <input type="text" id="sqft" placeholder="1,400" />
+          </div>
+          <div class="full">
+            <label>Photo URL (optional)</label>
+            <input type="url" id="imageUrl" placeholder="https://..." />
+          </div>
+          <div class="full">
+            <label>Description / Property Notes</label>
+            <textarea id="description" placeholder="Condition, updates, investment highlights..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">+ Add Deal</button>
+        </div>
+        <div class="msg" id="formMsg"></div>
+      </form>
+    </div>
+
+    <div class="deals-section">
+      <h2>Current Deals</h2>
+      <div id="dealsList"><div class="empty">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PASS = 'metro99';
+
+  function tryLogin() {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASS) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminScreen').style.display = 'block';
+      loadDeals();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+    }
+  }
+
+  document.getElementById('pwInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function statusClass(s) {
+    if (s==='Available') return 'status-available';
+    if (s==='Pending')   return 'status-pending';
+    return 'status-sold';
+  }
+
+  function copyDealLink(id) {
+    const url = location.origin + '/deal?id=' + id;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('share-'+id);
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+
+  async function loadDeals() {
+    const res = await fetch('/api/deals').then(r=>r.json());
+    const list = document.getElementById('dealsList');
+    if (!res.length) {
+      list.innerHTML = '<div class="empty">No deals yet. Add one above.</div>';
+      return;
+    }
+    list.innerHTML = res.map(d => `
+      <div class="deal-row" id="row-${d.id}">
+        <div class="deal-thumb">
+          ${d.imageUrl ? `<img src="${esc(d.imageUrl)}" onerror="this.parentElement.textContent='🏠'">` : '🏠'}
+        </div>
+        <div class="deal-info">
+          <div class="address">${esc(d.address)}</div>
+          <div class="price">${esc(d.price)}</div>
+          <div class="meta">
+            <span class="deal-status ${statusClass(d.status)}">${esc(d.status)}</span>
+            ${d.beds ? ` · ${esc(d.beds)} bed` : ''}${d.baths ? ` / ${esc(d.baths)} bath` : ''}${d.sqft ? ` · ${esc(d.sqft)} sqft` : ''}
+          </div>
+        </div>
+        <div class="deal-actions">
+          <button class="btn btn-share" id="share-${d.id}" onclick="copyDealLink('${d.id}')">🔗 Share</button>
+          <button class="btn btn-danger" onclick="deleteDeal('${d.id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function deleteDeal(id) {
+    if (!confirm('Delete this deal? This cannot be undone.')) return;
+    const res = await fetch('/api/deals?manage=metro99&id='+id, { method: 'DELETE' });
+    if (res.ok) {
+      document.getElementById('row-'+id)?.remove();
+      if (!document.querySelectorAll('[id^="row-"]').length) {
+        document.getElementById('dealsList').innerHTML = '<div class="empty">No deals yet. Add one above.</div>';
+      }
+    } else {
+      alert('Failed to delete. Please try again.');
+    }
+  }
+
+  document.getElementById('dealForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = document.getElementById('formMsg');
+    msg.className = 'msg';
+
+    const payload = {
+      address:     document.getElementById('address').value.trim(),
+      price:       document.getElementById('price').value.trim(),
+      beds:        document.getElementById('beds').value.trim(),
+      baths:       document.getElementById('baths').value.trim(),
+      sqft:        document.getElementById('sqft').value.trim(),
+      status:      document.getElementById('status').value,
+      imageUrl:    document.getElementById('imageUrl').value.trim(),
+      description: document.getElementById('description').value.trim(),
+    };
+
+    try {
+      const res = await fetch('/api/deals?manage=metro99', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        msg.textContent = 'Deal added! Use the 🔗 Share button to copy the link.';
+        msg.className = 'msg success';
+        e.target.reset();
+        loadDeals();
+        setTimeout(() => { msg.className = 'msg'; }, 5000);
+      } else {
+        const err = await res.json();
+        msg.textContent = err.error || 'Failed to add deal.';
+        msg.className = 'msg error';
+      }
+    } catch {
+      msg.textContent = 'Network error. Please try again.';
+      msg.className = 'msg error';
+    }
+  });
+</script>
+</body>
+</html>
