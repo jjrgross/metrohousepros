@@ -182,7 +182,7 @@
         </div>
         <div class="full">
           <label>Photo URL (optional)</label>
-          <input type="url" id="editImageUrl" />
+          <input type="text" id="editImageUrl" />
         </div>
         <div class="full">
           <label>Description / Property Notes</label>
@@ -237,7 +237,7 @@
           </div>
           <div class="full">
             <label>Photo URL (optional)</label>
-            <input type="url" id="imageUrl" placeholder="https://..." />
+            <input type="text" id="imageUrl" placeholder="https://... or emoji or n/a" />
           </div>
           <div class="full">
             <label>Description / Property Notes</label>
@@ -323,7 +323,7 @@
     list.innerHTML = _deals.map(d => `
       <div class="deal-row" id="row-${d.id}">
         <div class="deal-thumb">
-          ${d.imageUrl ? `<img src="${esc(d.imageUrl)}" onerror="this.parentElement.textContent='🏠'">` : '🏠'}
+          ${d.imageUrl && /^https?:\/\//i.test(d.imageUrl) ? `<img src="${esc(d.imageUrl)}" onerror="this.parentElement.textContent='🏠'">` : d.imageUrl ? esc(d.imageUrl) : '🏠'}
         </div>
         <div class="deal-info">
           <div class="address">${esc(d.address)}</div>

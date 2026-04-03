@@ -85,11 +85,12 @@
       if (!res.ok) throw new Error();
       const d = await res.json();
       document.title = d.address + ' | Metro House Pros';
+      const isUrl = d.imageUrl && /^https?:\/\//i.test(d.imageUrl);
       document.getElementById('content').innerHTML = `
-        ${d.imageUrl
+        ${isUrl
           ? `<img class="deal-img" src="${esc(d.imageUrl)}" alt="${esc(d.address)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
           : ''}
-        <div class="deal-img-placeholder"${d.imageUrl?' style="display:none"':''}>🏠</div>
+        <div class="deal-img-placeholder"${isUrl?' style="display:none"':''}>${d.imageUrl ? esc(d.imageUrl) : '🏠'}</div>
         <div class="deal-status ${statusClass(d.status)}">${esc(d.status)}</div>
         <h1>${esc(d.address)}</h1>
         <div class="price">${esc(d.price)}</div>
