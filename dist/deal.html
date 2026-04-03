@@ -83,7 +83,6 @@
       if (!res.ok) throw new Error();
       const d = await res.json();
       document.title = d.address + ' | Metro House Pros';
-      const pictures = d.pictures || d.imageUrl || '';
       document.getElementById('content').innerHTML = `
         <div class="deal-status ${statusClass(d.status)}">${esc(d.status)}</div>
         <h1>${esc(d.address)}</h1>
@@ -101,11 +100,6 @@
         <div class="description-box">
           <h2>About this property</h2>
           <p>${esc(d.description)}</p>
-        </div>`:''}
-        ${pictures?`
-        <div class="description-box">
-          <h2>Pictures</h2>
-          <p>${esc(pictures)}</p>
         </div>`:''}
         <div class="cta-box">
           <h2>Interested in this property?</h2>

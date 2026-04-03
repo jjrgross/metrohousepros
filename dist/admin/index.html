@@ -181,10 +181,6 @@
           <input type="text" id="editSqft" />
         </div>
         <div class="full">
-          <label>Pictures</label>
-          <textarea id="editPictures"></textarea>
-        </div>
-        <div class="full">
           <label>Description / Property Notes</label>
           <textarea id="editDescription"></textarea>
         </div>
@@ -234,10 +230,6 @@
           <div>
             <label>Sq Ft</label>
             <input type="text" id="sqft" placeholder="1,400" />
-          </div>
-          <div class="full">
-            <label>Pictures</label>
-            <textarea id="pictures" placeholder="Paste links, describe photos, etc."></textarea>
           </div>
           <div class="full">
             <label>Description / Property Notes</label>
@@ -349,7 +341,6 @@
     document.getElementById('editBeds').value      = d.beds || '';
     document.getElementById('editBaths').value     = d.baths || '';
     document.getElementById('editSqft').value      = d.sqft || '';
-    document.getElementById('editPictures').value  = d.pictures || d.imageUrl || '';
     document.getElementById('editDescription').value = d.description || '';
     document.getElementById('editMsg').className   = 'msg';
     document.getElementById('editModal').classList.add('open');
@@ -375,7 +366,6 @@
       baths:       document.getElementById('editBaths').value.trim(),
       sqft:        document.getElementById('editSqft').value.trim(),
       status:      document.getElementById('editStatus').value,
-      pictures:    document.getElementById('editPictures').value.trim(),
       description: document.getElementById('editDescription').value.trim(),
     };
     try {
@@ -410,7 +400,6 @@
       baths:       document.getElementById('baths').value.trim(),
       sqft:        document.getElementById('sqft').value.trim(),
       status:      document.getElementById('status').value,
-      pictures:    document.getElementById('pictures').value.trim(),
       description: document.getElementById('description').value.trim(),
     };
 
