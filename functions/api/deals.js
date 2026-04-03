@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
     sqft: deal.sqft || '',
     description: deal.description || '',
     status: deal.status || 'Available',
-    imageUrl: deal.imageUrl || '',
+    pictures: deal.pictures || '',
     createdAt: new Date().toISOString(),
   };
   deals.unshift(newDeal);

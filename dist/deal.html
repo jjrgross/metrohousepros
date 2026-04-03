@@ -23,9 +23,7 @@
     .container { max-width: 800px; margin: 0 auto; padding: 32px 20px; }
     .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 0.88rem; margin-bottom: 24px; }
     .back-link:hover { color: var(--navy); }
-    .deal-img { width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-bottom: 28px; display: block; }
-    .deal-img-placeholder { width: 100%; height: 280px; background: linear-gradient(135deg, #1e3a8a 0%, #0f2557 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 5rem; margin-bottom: 28px; }
-    .deal-status { display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 12px; border-radius: 99px; margin-bottom: 12px; }
+.deal-status { display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 12px; border-radius: 99px; margin-bottom: 12px; }
     .status-available { background: #dcfce7; color: #15803d; }
     .status-pending   { background: #fef3c7; color: #92400e; }
     .status-sold      { background: #fee2e2; color: #991b1b; }
@@ -85,12 +83,8 @@
       if (!res.ok) throw new Error();
       const d = await res.json();
       document.title = d.address + ' | Metro House Pros';
-      const isUrl = d.imageUrl && /^https?:\/\//i.test(d.imageUrl);
+      const pictures = d.pictures || d.imageUrl || '';
       document.getElementById('content').innerHTML = `
-        ${isUrl
-          ? `<img class="deal-img" src="${esc(d.imageUrl)}" alt="${esc(d.address)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-          : ''}
-        <div class="deal-img-placeholder"${isUrl?' style="display:none"':''}>${d.imageUrl ? esc(d.imageUrl) : '🏠'}</div>
         <div class="deal-status ${statusClass(d.status)}">${esc(d.status)}</div>
         <h1>${esc(d.address)}</h1>
         <div class="price">${esc(d.price)}</div>
@@ -107,6 +101,11 @@
         <div class="description-box">
           <h2>About this property</h2>
           <p>${esc(d.description)}</p>
+        </div>`:''}
+        ${pictures?`
+        <div class="description-box">
+          <h2>Pictures</h2>
+          <p>${esc(pictures)}</p>
         </div>`:''}
         <div class="cta-box">
           <h2>Interested in this property?</h2>

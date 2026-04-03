@@ -181,8 +181,8 @@
           <input type="text" id="editSqft" />
         </div>
         <div class="full">
-          <label>Photo URL (optional)</label>
-          <input type="text" id="editImageUrl" />
+          <label>Pictures</label>
+          <textarea id="editPictures"></textarea>
         </div>
         <div class="full">
           <label>Description / Property Notes</label>
@@ -236,8 +236,8 @@
             <input type="text" id="sqft" placeholder="1,400" />
           </div>
           <div class="full">
-            <label>Photo URL (optional)</label>
-            <input type="text" id="imageUrl" placeholder="https://... or emoji or n/a" />
+            <label>Pictures</label>
+            <textarea id="pictures" placeholder="Paste links, describe photos, etc."></textarea>
           </div>
           <div class="full">
             <label>Description / Property Notes</label>
@@ -322,9 +322,7 @@
     }
     list.innerHTML = _deals.map(d => `
       <div class="deal-row" id="row-${d.id}">
-        <div class="deal-thumb">
-          ${d.imageUrl && /^https?:\/\//i.test(d.imageUrl) ? `<img src="${esc(d.imageUrl)}" onerror="this.parentElement.textContent='🏠'">` : d.imageUrl ? esc(d.imageUrl) : '🏠'}
-        </div>
+        <div class="deal-thumb">🏠</div>
         <div class="deal-info">
           <div class="address">${esc(d.address)}</div>
           <div class="price">${esc(d.price)}</div>
@@ -351,7 +349,7 @@
     document.getElementById('editBeds').value      = d.beds || '';
     document.getElementById('editBaths').value     = d.baths || '';
     document.getElementById('editSqft').value      = d.sqft || '';
-    document.getElementById('editImageUrl').value  = d.imageUrl || '';
+    document.getElementById('editPictures').value  = d.pictures || d.imageUrl || '';
     document.getElementById('editDescription').value = d.description || '';
     document.getElementById('editMsg').className   = 'msg';
     document.getElementById('editModal').classList.add('open');
@@ -377,7 +375,7 @@
       baths:       document.getElementById('editBaths').value.trim(),
       sqft:        document.getElementById('editSqft').value.trim(),
       status:      document.getElementById('editStatus').value,
-      imageUrl:    document.getElementById('editImageUrl').value.trim(),
+      pictures:    document.getElementById('editPictures').value.trim(),
       description: document.getElementById('editDescription').value.trim(),
     };
     try {
@@ -412,7 +410,7 @@
       baths:       document.getElementById('baths').value.trim(),
       sqft:        document.getElementById('sqft').value.trim(),
       status:      document.getElementById('status').value,
-      imageUrl:    document.getElementById('imageUrl').value.trim(),
+      pictures:    document.getElementById('pictures').value.trim(),
       description: document.getElementById('description').value.trim(),
     };
 
