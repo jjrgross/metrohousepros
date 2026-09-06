@@ -244,14 +244,24 @@ export async function onRequestPost(context) {
   await context.env.DEALS_KV.put('leads', JSON.stringify(leads));
   
   // Send email notification (don't block on email sending)
+  let emailSent = false;
+  let emailError = null;
   try {
-    await sendLeadEmail(newLead);
+    emailSent = await sendLeadEmail(newLead);
+    if (!emailSent) {
+      emailError = 'Email sending returned false - check Cloudflare logs';
+    }
   } catch (error) {
     console.error('Email notification failed:', error);
+    emailError = error.message;
     // Continue even if email fails - lead is still saved
   }
   
-  return json(newLead, 201);
+  return json({
+    ...newLead,
+    emailSent,
+    emailError
+  }, 201);
 }
 
 export async function onRequestPut(context) {
