@@ -1,10 +1,12 @@
 const ADMIN_KEY = 'metro99';
 
-// Email configuration - update with your email addresses
+// Email configuration
 const EMAIL_CONFIG = {
-  to: 'jjrgross@gmail.com', // Your email address to receive notifications
-  from: 'leads@metrohousepros.com', // From address (must be verified with your email service)
-  replyTo: '', // Will be set to the lead's email
+  to: 'jjrgross@gmail.com',
+  from: 'leads@metrohousepros.com',
+  // Add your Resend API key here (get free at resend.com)
+  // Or set as environment variable RESEND_API_KEY in Cloudflare
+  resendApiKey: '', // Will use env var if empty
 };
 
 function json(data, status = 200) {
@@ -21,7 +23,142 @@ function isAdmin(url) {
   return url.searchParams.get('manage') === ADMIN_KEY;
 }
 
-async function sendLeadEmail(lead) {
+async function sendLeadEmail(lead, context) {
+  // Get API key from environment or config
+  const apiKey = context.env.RESEND_API_KEY || EMAIL_CONFIG.resendApiKey;
+  
+  if (!apiKey) {
+    console.error('No Resend API key configured');
+    return { success: false, error: 'No API key configured' };
+  }
+
+  // Format the email body
+  const emailBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #0f2557; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+    .content { background: #f8fafc; padding: 25px; border: 1px solid #e2e8f0; border-top: none; }
+    .field { margin-bottom: 15px; padding: 12px; background: white; border-radius: 5px; border-left: 3px solid #22c55e; }
+    .label { font-weight: bold; color: #0f2557; margin-bottom: 5px; }
+    .value { color: #1e293b; }
+    .footer { margin-top: 20px; padding: 15px; text-align: center; font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0;">🏠 New Lead Submission</h1>
+      <p style="margin: 5px 0 0 0; opacity: 0.9;">Metro House Pros</p>
+    </div>
+    <div class="content">
+      <p style="font-size: 16px; margin-top: 0;"><strong>You have a new lead submission!</strong></p>
+      
+      <div class="field">
+        <div class="label">👤 Name</div>
+        <div class="value">${lead.name}</div>
+      </div>
+      
+      <div class="field">
+        <div class="label">📞 Phone</div>
+        <div class="value"><a href="tel:${lead.phone}">${lead.phone}</a></div>
+      </div>
+      
+      <div class="field">
+        <div class="label">📧 Email</div>
+        <div class="value"><a href="mailto:${lead.email}">${lead.email}</a></div>
+      </div>
+      
+      ${lead.address ? `
+      <div class="field">
+        <div class="label">🏡 Property Address</div>
+        <div class="value">${lead.address}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.timeline ? `
+      <div class="field">
+        <div class="label">⏰ Timeline</div>
+        <div class="value">${lead.timeline}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.propertyCondition ? `
+      <div class="field">
+        <div class="label">🔧 Property Condition</div>
+        <div class="value">${lead.propertyCondition}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.occupancy ? `
+      <div class="field">
+        <div class="label">🏠 Occupancy</div>
+        <div class="value">${lead.occupancy}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.listedWithAgent ? `
+      <div class="field">
+        <div class="label">📋 Listed with Agent?</div>
+        <div class="value">${lead.listedWithAgent}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.additionalNotes ? `
+      <div class="field">
+        <div class="label">📝 Additional Notes</div>
+        <div class="value">${lead.additionalNotes}</div>
+      </div>
+      ` : ''}
+      
+      <div style="margin-top: 25px; padding: 15px; background: #dbeafe; border-radius: 5px; text-align: center;">
+        <p style="margin: 0 0 10px 0; font-weight: bold;">Quick Actions</p>
+        <a href="tel:${lead.phone}" style="display: inline-block; background: #0f2557; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📞 Call Now</a>
+        <a href="mailto:${lead.email}" style="display: inline-block; background: #22c55e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📧 Email</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>This lead was submitted on ${new Date(lead.createdAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+      <p>Manage your leads at <a href="https://metrohousepros.com/admin">metrohousepros.com/admin</a></p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: `Metro House Pros <${EMAIL_CONFIG.from}>`,
+        to: [EMAIL_CONFIG.to],
+        reply_to: lead.email,
+        subject: `🏠 New Lead: ${lead.name} - ${lead.phone}`,
+        html: emailBody,
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      console.error('Resend API error:', result);
+      return { success: false, error: `Resend error: ${result.message || 'Unknown error'}` };
+    }
+    
+    console.log('Email sent successfully via Resend:', result.id);
+    return { success: true, emailId: result.id };
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return { success: false, error: error.message };
+  }
+}
   // Format the email body
   const emailBody = `
 <!DOCTYPE html>
@@ -244,24 +381,14 @@ export async function onRequestPost(context) {
   leads.unshift(newLead);
   await context.env.DEALS_KV.put('leads', JSON.stringify(leads));
   
-  // Send email notification (don't block on email sending)
-  let emailSent = false;
-  let emailError = null;
-  try {
-    emailSent = await sendLeadEmail(newLead);
-    if (!emailSent) {
-      emailError = 'Email sending returned false - check Cloudflare logs';
-    }
-  } catch (error) {
-    console.error('Email notification failed:', error);
-    emailError = error.message;
-    // Continue even if email fails - lead is still saved
-  }
+  // Send email notification
+  const emailResult = await sendLeadEmail(newLead, context);
   
   return json({
     ...newLead,
-    emailSent,
-    emailError
+    emailSent: emailResult.success,
+    emailError: emailResult.error || null,
+    emailId: emailResult.emailId || null
   }, 201);
 }
 
