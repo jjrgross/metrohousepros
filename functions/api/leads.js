@@ -2,7 +2,7 @@ const ADMIN_KEY = 'metro99';
 
 // Email configuration - update with your email addresses
 const EMAIL_CONFIG = {
-  to: 'info@metrohousepros.com', // Your email address to receive notifications
+  to: 'jjrgross@gmail.com', // Your email address to receive notifications
   from: 'leads@metrohousepros.com', // From address (must be verified with your email service)
   replyTo: '', // Will be set to the lead's email
 };
