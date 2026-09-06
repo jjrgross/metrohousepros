@@ -4,9 +4,7 @@ const ADMIN_KEY = 'metro99';
 const EMAIL_CONFIG = {
   to: 'jjrgross@gmail.com',
   from: 'leads@metrohousepros.com',
-  // Add your Resend API key here (get free at resend.com)
-  // Or set as environment variable RESEND_API_KEY in Cloudflare
-  resendApiKey: '', // Will use env var if empty
+  resendApiKey: '', // Will use RESEND_API_KEY env var if empty
 };
 
 function json(data, status = 200) {
@@ -24,110 +22,16 @@ function isAdmin(url) {
 }
 
 async function sendLeadEmail(lead, context) {
-  // Get API key from environment or config
   const apiKey = context.env.RESEND_API_KEY || EMAIL_CONFIG.resendApiKey;
   
   if (!apiKey) {
-    console.error('No Resend API key configured');
-    return { success: false, error: 'No API key configured' };
+    return { success: false, error: 'No Resend API key configured. Get one free at resend.com' };
   }
 
-  // Format the email body
-  const emailBody = `
-<!DOCTYPE html>
+  const emailBody = `<!DOCTYPE html>
 <html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #0f2557; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-    .content { background: #f8fafc; padding: 25px; border: 1px solid #e2e8f0; border-top: none; }
-    .field { margin-bottom: 15px; padding: 12px; background: white; border-radius: 5px; border-left: 3px solid #22c55e; }
-    .label { font-weight: bold; color: #0f2557; margin-bottom: 5px; }
-    .value { color: #1e293b; }
-    .footer { margin-top: 20px; padding: 15px; text-align: center; font-size: 12px; color: #64748b; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1 style="margin: 0;">🏠 New Lead Submission</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">Metro House Pros</p>
-    </div>
-    <div class="content">
-      <p style="font-size: 16px; margin-top: 0;"><strong>You have a new lead submission!</strong></p>
-      
-      <div class="field">
-        <div class="label">👤 Name</div>
-        <div class="value">${lead.name}</div>
-      </div>
-      
-      <div class="field">
-        <div class="label">📞 Phone</div>
-        <div class="value"><a href="tel:${lead.phone}">${lead.phone}</a></div>
-      </div>
-      
-      <div class="field">
-        <div class="label">📧 Email</div>
-        <div class="value"><a href="mailto:${lead.email}">${lead.email}</a></div>
-      </div>
-      
-      ${lead.address ? `
-      <div class="field">
-        <div class="label">🏡 Property Address</div>
-        <div class="value">${lead.address}</div>
-      </div>
-      ` : ''}
-      
-      ${lead.timeline ? `
-      <div class="field">
-        <div class="label">⏰ Timeline</div>
-        <div class="value">${lead.timeline}</div>
-      </div>
-      ` : ''}
-      
-      ${lead.propertyCondition ? `
-      <div class="field">
-        <div class="label">🔧 Property Condition</div>
-        <div class="value">${lead.propertyCondition}</div>
-      </div>
-      ` : ''}
-      
-      ${lead.occupancy ? `
-      <div class="field">
-        <div class="label">🏠 Occupancy</div>
-        <div class="value">${lead.occupancy}</div>
-      </div>
-      ` : ''}
-      
-      ${lead.listedWithAgent ? `
-      <div class="field">
-        <div class="label">📋 Listed with Agent?</div>
-        <div class="value">${lead.listedWithAgent}</div>
-      </div>
-      ` : ''}
-      
-      ${lead.additionalNotes ? `
-      <div class="field">
-        <div class="label">📝 Additional Notes</div>
-        <div class="value">${lead.additionalNotes}</div>
-      </div>
-      ` : ''}
-      
-      <div style="margin-top: 25px; padding: 15px; background: #dbeafe; border-radius: 5px; text-align: center;">
-        <p style="margin: 0 0 10px 0; font-weight: bold;">Quick Actions</p>
-        <a href="tel:${lead.phone}" style="display: inline-block; background: #0f2557; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📞 Call Now</a>
-        <a href="mailto:${lead.email}" style="display: inline-block; background: #22c55e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📧 Email</a>
-      </div>
-    </div>
-    <div class="footer">
-      <p>This lead was submitted on ${new Date(lead.createdAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
-      <p>Manage your leads at <a href="https://metrohousepros.com/admin">metrohousepros.com/admin</a></p>
-    </div>
-  </div>
-</body>
-</html>
-  `.trim();
+<head><style>body{font-family:Arial,sans-serif;line-height:1.6;color:#333}.container{max-width:600px;margin:0 auto;padding:20px}.header{background:#0f2557;color:white;padding:20px;text-align:center;border-radius:5px 5px 0 0}.content{background:#f8fafc;padding:25px;border:1px solid #e2e8f0;border-top:none}.field{margin-bottom:15px;padding:12px;background:white;border-radius:5px;border-left:3px solid #22c55e}.label{font-weight:bold;color:#0f2557;margin-bottom:5px}.value{color:#1e293b}.footer{margin-top:20px;padding:15px;text-align:center;font-size:12px;color:#64748b}</style></head>
+<body><div class="container"><div class="header"><h1 style="margin:0">🏠 New Lead Submission</h1><p style="margin:5px 0 0 0;opacity:0.9">Metro House Pros</p></div><div class="content"><p style="font-size:16px;margin-top:0"><strong>You have a new lead submission!</strong></p><div class="field"><div class="label">👤 Name</div><div class="value">${lead.name}</div></div><div class="field"><div class="label">📞 Phone</div><div class="value"><a href="tel:${lead.phone}">${lead.phone}</a></div></div><div class="field"><div class="label">📧 Email</div><div class="value"><a href="mailto:${lead.email}">${lead.email}</a></div></div>${lead.address ? `<div class="field"><div class="label">🏡 Property Address</div><div class="value">${lead.address}</div></div>` : ''}${lead.timeline ? `<div class="field"><div class="label">⏰ Timeline</div><div class="value">${lead.timeline}</div></div>` : ''}${lead.propertyCondition ? `<div class="field"><div class="label">🔧 Property Condition</div><div class="value">${lead.propertyCondition}</div></div>` : ''}${lead.occupancy ? `<div class="field"><div class="label">🏠 Occupancy</div><div class="value">${lead.occupancy}</div></div>` : ''}${lead.listedWithAgent ? `<div class="field"><div class="label">📋 Listed with Agent?</div><div class="value">${lead.listedWithAgent}</div></div>` : ''}${lead.additionalNotes ? `<div class="field"><div class="label">📝 Additional Notes</div><div class="value">${lead.additionalNotes}</div></div>` : ''}<div style="margin-top:25px;padding:15px;background:#dbeafe;border-radius:5px;text-align:center"><p style="margin:0 0 10px 0;font-weight:bold">Quick Actions</p><a href="tel:${lead.phone}" style="display:inline-block;background:#0f2557;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;margin:5px">📞 Call Now</a><a href="mailto:${lead.email}" style="display:inline-block;background:#22c55e;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;margin:5px">📧 Email</a></div></div><div class="footer"><p>Submitted ${new Date(lead.createdAt).toLocaleString()}</p><p>Manage leads at <a href="https://metrohousepros.com/admin">metrohousepros.com/admin</a></p></div></div></body></html>`;
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -148,21 +52,18 @@ async function sendLeadEmail(lead, context) {
     const result = await response.json();
     
     if (!response.ok) {
-      console.error('Resend API error:', result);
       return { success: false, error: `Resend error: ${result.message || 'Unknown error'}` };
     }
     
-    console.log('Email sent successfully via Resend:', result.id);
     return { success: true, emailId: result.id };
   } catch (error) {
-    console.error('Error sending email:', error);
     return { success: false, error: error.message };
+  }
 }
 
 export async function onRequestGet(context) {
   const url = new URL(context.request.url);
   
-  // Only admins can view leads
   if (!isAdmin(url)) {
     return json({ error: 'Unauthorized' }, 401);
   }
@@ -176,7 +77,6 @@ export async function onRequestGet(context) {
     return json(lead);
   }
 
-  // Return all leads sorted by newest first
   return json(leads);
 }
 
@@ -184,7 +84,6 @@ export async function onRequestPost(context) {
   const url = new URL(context.request.url);
   const lead = await context.request.json();
 
-  // Validate required fields
   if (!lead.name || !lead.phone || !lead.email) {
     return json({ error: 'name, phone, and email are required' }, 400);
   }
@@ -203,7 +102,7 @@ export async function onRequestPost(context) {
     occupancy: lead.occupancy || '',
     listedWithAgent: lead.listedWithAgent || '',
     additionalNotes: lead.additionalNotes || '',
-    status: 'new', // new, contacted, qualified, closed
+    status: 'new',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -211,7 +110,6 @@ export async function onRequestPost(context) {
   leads.unshift(newLead);
   await context.env.DEALS_KV.put('leads', JSON.stringify(leads));
   
-  // Send email notification
   const emailResult = await sendLeadEmail(newLead, context);
   
   return json({
@@ -225,7 +123,6 @@ export async function onRequestPost(context) {
 export async function onRequestPut(context) {
   const url = new URL(context.request.url);
   
-  // Only admins can edit leads
   if (!isAdmin(url)) {
     return json({ error: 'Unauthorized' }, 401);
   }
@@ -251,7 +148,6 @@ export async function onRequestPut(context) {
 export async function onRequestDelete(context) {
   const url = new URL(context.request.url);
   
-  // Only admins can delete leads
   if (!isAdmin(url)) {
     return json({ error: 'Unauthorized' }, 401);
   }
