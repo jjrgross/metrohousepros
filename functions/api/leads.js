@@ -140,44 +140,53 @@ Manage leads: https://metrohousepros.com/admin
 
   // Using MailChannels API (free for Cloudflare Workers)
   try {
+    const emailPayload = {
+      personalizations: [
+        {
+          to: [{ email: EMAIL_CONFIG.to }],
+          reply_to: { email: lead.email, name: lead.name },
+          dkim_domain: 'metrohousepros.com',
+          dkim_selector: 'mailchannels',
+        },
+      ],
+      from: {
+        email: EMAIL_CONFIG.from,
+        name: 'Metro House Pros Leads',
+      },
+      subject: `🏠 New Lead: ${lead.name} - ${lead.phone}`,
+      content: [
+        {
+          type: 'text/plain',
+          value: plainTextBody,
+        },
+        {
+          type: 'text/html',
+          value: emailBody,
+        },
+      ],
+    };
+
+    console.log('Attempting to send email to:', EMAIL_CONFIG.to);
+    
     const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        personalizations: [
-          {
-            to: [{ email: EMAIL_CONFIG.to }],
-            reply_to: { email: lead.email, name: lead.name },
-          },
-        ],
-        from: {
-          email: EMAIL_CONFIG.from,
-          name: 'Metro House Pros Leads',
-        },
-        subject: `🏠 New Lead: ${lead.name} - ${lead.phone}`,
-        content: [
-          {
-            type: 'text/plain',
-            value: plainTextBody,
-          },
-          {
-            type: 'text/html',
-            value: emailBody,
-          },
-        ],
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
+    const responseText = await response.text();
+    
     if (!response.ok) {
-      console.error('Failed to send email:', await response.text());
+      console.error('MailChannels API error:', response.status, responseText);
       return false;
     }
     
+    console.log('Email sent successfully via MailChannels');
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email:', error.message, error.stack);
     return false;
   }
 }
