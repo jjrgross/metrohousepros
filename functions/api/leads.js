@@ -179,8 +179,9 @@ Manage leads: https://metrohousepros.com/admin
     const responseText = await response.text();
     
     if (!response.ok) {
+      const errorMsg = `MailChannels error ${response.status}: ${responseText}`;
       console.error('MailChannels API error:', response.status, responseText);
-      return false;
+      throw new Error(errorMsg);
     }
     
     console.log('Email sent successfully via MailChannels');
