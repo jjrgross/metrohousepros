@@ -1,5 +1,12 @@
 const ADMIN_KEY = 'metro99';
 
+// Email configuration - update with your email addresses
+const EMAIL_CONFIG = {
+  to: 'info@metrohousepros.com', // Your email address to receive notifications
+  from: 'leads@metrohousepros.com', // From address (must be verified with your email service)
+  replyTo: '', // Will be set to the lead's email
+};
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -12,6 +19,167 @@ function json(data, status = 200) {
 
 function isAdmin(url) {
   return url.searchParams.get('manage') === ADMIN_KEY;
+}
+
+async function sendLeadEmail(lead) {
+  // Format the email body
+  const emailBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #0f2557; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+    .content { background: #f8fafc; padding: 25px; border: 1px solid #e2e8f0; border-top: none; }
+    .field { margin-bottom: 15px; padding: 12px; background: white; border-radius: 5px; border-left: 3px solid #22c55e; }
+    .label { font-weight: bold; color: #0f2557; margin-bottom: 5px; }
+    .value { color: #1e293b; }
+    .footer { margin-top: 20px; padding: 15px; text-align: center; font-size: 12px; color: #64748b; }
+    .badge { display: inline-block; background: #22c55e; color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0;">🏠 New Lead Submission</h1>
+      <p style="margin: 5px 0 0 0; opacity: 0.9;">Metro House Pros</p>
+    </div>
+    <div class="content">
+      <p style="font-size: 16px; margin-top: 0;"><strong>You have a new lead submission!</strong></p>
+      
+      <div class="field">
+        <div class="label">👤 Name</div>
+        <div class="value">${lead.name}</div>
+      </div>
+      
+      <div class="field">
+        <div class="label">📞 Phone</div>
+        <div class="value"><a href="tel:${lead.phone}">${lead.phone}</a></div>
+      </div>
+      
+      <div class="field">
+        <div class="label">📧 Email</div>
+        <div class="value"><a href="mailto:${lead.email}">${lead.email}</a></div>
+      </div>
+      
+      ${lead.address ? `
+      <div class="field">
+        <div class="label">🏡 Property Address</div>
+        <div class="value">${lead.address}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.timeline ? `
+      <div class="field">
+        <div class="label">⏰ Timeline</div>
+        <div class="value">${lead.timeline}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.propertyCondition ? `
+      <div class="field">
+        <div class="label">🔧 Property Condition</div>
+        <div class="value">${lead.propertyCondition}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.occupancy ? `
+      <div class="field">
+        <div class="label">🏠 Occupancy</div>
+        <div class="value">${lead.occupancy}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.listedWithAgent ? `
+      <div class="field">
+        <div class="label">📋 Listed with Agent?</div>
+        <div class="value">${lead.listedWithAgent}</div>
+      </div>
+      ` : ''}
+      
+      ${lead.additionalNotes ? `
+      <div class="field">
+        <div class="label">📝 Additional Notes</div>
+        <div class="value">${lead.additionalNotes}</div>
+      </div>
+      ` : ''}
+      
+      <div style="margin-top: 25px; padding: 15px; background: #dbeafe; border-radius: 5px; text-align: center;">
+        <p style="margin: 0 0 10px 0; font-weight: bold;">Quick Actions</p>
+        <a href="tel:${lead.phone}" style="display: inline-block; background: #0f2557; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📞 Call Now</a>
+        <a href="mailto:${lead.email}" style="display: inline-block; background: #22c55e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">📧 Email</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>This lead was submitted on ${new Date(lead.createdAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+      <p>Manage your leads at <a href="https://metrohousepros.com/admin">metrohousepros.com/admin</a></p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  const plainTextBody = `
+NEW LEAD SUBMISSION - Metro House Pros
+
+Name: ${lead.name}
+Phone: ${lead.phone}
+Email: ${lead.email}
+${lead.address ? `Property Address: ${lead.address}` : ''}
+${lead.timeline ? `Timeline: ${lead.timeline}` : ''}
+${lead.propertyCondition ? `Property Condition: ${lead.propertyCondition}` : ''}
+${lead.occupancy ? `Occupancy: ${lead.occupancy}` : ''}
+${lead.listedWithAgent ? `Listed with Agent: ${lead.listedWithAgent}` : ''}
+${lead.additionalNotes ? `\nAdditional Notes:\n${lead.additionalNotes}` : ''}
+
+Submitted: ${new Date(lead.createdAt).toLocaleString()}
+
+Manage leads: https://metrohousepros.com/admin
+  `.trim();
+
+  // Using MailChannels API (free for Cloudflare Workers)
+  try {
+    const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        personalizations: [
+          {
+            to: [{ email: EMAIL_CONFIG.to }],
+            reply_to: { email: lead.email, name: lead.name },
+          },
+        ],
+        from: {
+          email: EMAIL_CONFIG.from,
+          name: 'Metro House Pros Leads',
+        },
+        subject: `🏠 New Lead: ${lead.name} - ${lead.phone}`,
+        content: [
+          {
+            type: 'text/plain',
+            value: plainTextBody,
+          },
+          {
+            type: 'text/html',
+            value: emailBody,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to send email:', await response.text());
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
 }
 
 export async function onRequestGet(context) {
@@ -65,6 +233,14 @@ export async function onRequestPost(context) {
 
   leads.unshift(newLead);
   await context.env.DEALS_KV.put('leads', JSON.stringify(leads));
+  
+  // Send email notification (don't block on email sending)
+  try {
+    await sendLeadEmail(newLead);
+  } catch (error) {
+    console.error('Email notification failed:', error);
+    // Continue even if email fails - lead is still saved
+  }
   
   return json(newLead, 201);
 }
