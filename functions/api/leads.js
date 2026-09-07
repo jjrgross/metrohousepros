@@ -2,7 +2,7 @@ const ADMIN_KEY = 'metro99';
 
 // Email configuration
 const EMAIL_CONFIG = {
-  to: 'jjrgross@gmail.com',
+  to: ['jjrgross@gmail.com', 'freddyviera915@gmail.com'],
   from: 'leads@metrohousepros.com',
   resendApiKey: '', // Will use RESEND_API_KEY env var if empty
 };
