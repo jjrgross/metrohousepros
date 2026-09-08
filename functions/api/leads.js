@@ -42,7 +42,7 @@ async function sendLeadEmail(lead, context) {
       },
       body: JSON.stringify({
         from: `Metro House Pros <${EMAIL_CONFIG.from}>`,
-        to: [EMAIL_CONFIG.to],
+        to: EMAIL_CONFIG.to,
         reply_to: lead.email,
         subject: `🏠 New Lead: ${lead.name} - ${lead.phone}`,
         html: emailBody,

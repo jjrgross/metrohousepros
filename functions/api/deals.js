@@ -46,6 +46,7 @@ export async function onRequestPost(context) {
     description: deal.description || '',
     status: deal.status || 'Available',
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   deals.unshift(newDeal);
   await context.env.DEALS_KV.put('deals', JSON.stringify(deals));
@@ -63,7 +64,11 @@ export async function onRequestPut(context) {
   const idx = deals.findIndex((d) => d.id === updates.id);
   if (idx === -1) return json({ error: 'Not found' }, 404);
 
-  deals[idx] = { ...deals[idx], ...updates };
+  deals[idx] = { 
+    ...deals[idx], 
+    ...updates,
+    updatedAt: new Date().toISOString()
+  };
   await context.env.DEALS_KV.put('deals', JSON.stringify(deals));
   return json(deals[idx]);
 }
@@ -85,7 +90,7 @@ export async function onRequestOptions() {
   return new Response(null, {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   });
