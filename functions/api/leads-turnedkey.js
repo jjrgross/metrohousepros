@@ -3,9 +3,9 @@
 
 const ADMIN_KEY = 'turnedkey2026';
 
-// Email configuration - UPDATE THESE VALUES
+// Email configuration
 const EMAIL_CONFIG = {
-  to: ['REPLACE_WITH_YOUR_EMAIL@example.com'], // Update with your email(s)
+  to: ['jjrgross@gmail.com', 'freddyviera915@gmail.com'],
   from: 'leads@turnedkey.com',
   resendApiKey: '', // Will use RESEND_API_KEY env var
 };
