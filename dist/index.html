@@ -588,6 +588,153 @@
       color: #94a3b8;
     }
     
+    /* Situations */
+    .situations {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .situation {
+      text-align: center;
+      padding: 32px 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+    
+    .situation:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+    }
+    
+    .situation-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    
+    .situation h3 {
+      font-size: 1.125rem;
+      margin-bottom: 12px;
+      color: #1e293b;
+    }
+    
+    .situation p {
+      color: #64748b;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    
+    /* Property Types */
+    .property-types {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .property-type {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s;
+    }
+    
+    .property-type:hover {
+      border-color: #3b82f6;
+      transform: translateY(-2px);
+    }
+    
+    .property-type h4 {
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-size: 1.125rem;
+    }
+    
+    .property-type p {
+      color: #64748b;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+    
+    /* FAQs */
+    .faqs {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .faq {
+      background: white;
+      padding: 32px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #3b82f6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .faq h3 {
+      color: #1e293b;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+    
+    .faq p {
+      color: #64748b;
+      line-height: 1.7;
+      margin: 0;
+    }
+    
+    /* Trust Section */
+    .trust-indicators {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto 60px;
+    }
+    
+    .trust-item {
+      text-align: center;
+    }
+    
+    .trust-number {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    
+    .trust-item p {
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .trust-badges {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .badge-item {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+      color: #1e293b;
+      border: 2px solid #e2e8f0;
+    }
+    
     /* Responsive */
     @media (max-width: 968px) {
       .hero-content {
@@ -607,6 +754,19 @@
       .benefits,
       .testimonials {
         grid-template-columns: 1fr;
+      }
+      
+      .situations {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .property-types {
+        grid-template-columns: 1fr;
+      }
+      
+      .trust-indicators,
+      .trust-badges {
+        grid-template-columns: repeat(2, 1fr);
       }
       
       .footer-content {
@@ -994,6 +1154,193 @@
     </div>
   </section>
   
+  <!-- Situations Section -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">We Buy Houses In ANY Situation</h2>
+        <p class="section-subtitle">No matter your circumstances, we're here to help you move forward.</p>
+      </div>
+      
+      <div class="situations">
+        <div class="situation">
+          <div class="situation-icon">💔</div>
+          <h3>Divorce</h3>
+          <p>Going through a divorce? We make it easy to sell your shared property quickly and fairly, so you can both move on.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">⚖️</div>
+          <h3>Foreclosure</h3>
+          <p>Facing foreclosure? We can close before the bank takes your home, helping you avoid foreclosure on your credit.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">🏠</div>
+          <h3>Inherited Property</h3>
+          <p>Inherited a house you don't want? We buy inherited homes as-is, saving you from maintenance and property taxes.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">✈️</div>
+          <h3>Job Relocation</h3>
+          <p>Moving for work? We close on your timeline - fast enough to match your relocation schedule.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">👴</div>
+          <h3>Downsizing</h3>
+          <p>Ready to downsize? Sell your larger home quickly without the hassle of repairs, staging, or showings.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">🔧</div>
+          <h3>Problem Property</h3>
+          <p>Fire damage? Foundation issues? Bad tenants? We buy homes in any condition - even ones agents won't touch.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">💰</div>
+          <h3>Financial Hardship</h3>
+          <p>Behind on payments? Medical bills? We provide fast cash to help you get back on your feet.</p>
+        </div>
+        
+        <div class="situation">
+          <div class="situation-icon">⏰</div>
+          <h3>Need to Sell Fast</h3>
+          <p>Whatever your reason for selling quickly, we can close in as little as 7 days with cash in hand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Property Types Section -->
+  <section class="section" style="background: #f8fafc;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">We Buy All Property Types</h2>
+        <p class="section-subtitle">Single-family homes, condos, townhouses, multi-family - we buy them all.</p>
+      </div>
+      
+      <div class="property-types">
+        <div class="property-type">
+          <h4>🏡 Single-Family Homes</h4>
+          <p>Traditional houses in any condition</p>
+        </div>
+        <div class="property-type">
+          <h4>🏢 Condos & Townhouses</h4>
+          <p>We handle HOA transfers and fees</p>
+        </div>
+        <div class="property-type">
+          <h4>🏘️ Multi-Family Properties</h4>
+          <p>Duplexes, triplexes, and apartment buildings</p>
+        </div>
+        <div class="property-type">
+          <h4>🏚️ Vacant Properties</h4>
+          <p>Empty homes, even with code violations</p>
+        </div>
+        <div class="property-type">
+          <h4>🔥 Fire Damaged</h4>
+          <p>We buy homes with fire or water damage</p>
+        </div>
+        <div class="property-type">
+          <h4>👥 Tenant Occupied</h4>
+          <p>We'll work with your tenants or buy occupied</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- FAQ Section -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Get answers to the most common questions about selling to TurnedKey.</p>
+      </div>
+      
+      <div class="faqs">
+        <div class="faq">
+          <h3>How much will you pay for my house?</h3>
+          <p>We provide fair market offers based on your home's condition, location, and recent comparable sales. Our offers are competitive and transparent - no hidden deductions or surprise fees at closing.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>Are there any fees or commissions?</h3>
+          <p>Absolutely not. Unlike selling with an agent (6% commission), we don't charge any fees, commissions, or closing costs. The offer we give you is the amount you'll receive at closing.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>How fast can you close?</h3>
+          <p>We can close in as little as 7 days if you need to sell quickly. However, we're also flexible - if you need 30, 60, or even 90 days, we can accommodate your timeline.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>Do I need to make repairs?</h3>
+          <p>No! We buy houses in as-is condition. Whether your property needs minor cosmetic work or major structural repairs, we'll buy it exactly as it is today.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>What if I still owe on my mortgage?</h3>
+          <p>Not a problem. We buy homes with existing mortgages all the time. We'll pay off your mortgage at closing and you'll receive the remaining equity.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>Is this a legitimate offer or a scam?</h3>
+          <p>We're verified real estate buyers who have purchased over 5,000 homes nationwide. We close through licensed title companies and attorneys, ensuring everything is legal and transparent.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>Do you buy houses in all 50 states?</h3>
+          <p>Yes! We buy houses nationwide. No matter where your property is located, we can make you a fair cash offer.</p>
+        </div>
+        
+        <div class="faq">
+          <h3>What happens after I submit my information?</h3>
+          <p>Within 24 hours, we'll contact you to discuss your property and situation. If it's a good fit, we'll schedule a quick walk-through (or virtual tour) and present you with a no-obligation cash offer within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Trust Section -->
+  <section class="section" style="background: #f8fafc;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Why Homeowners Trust TurnedKey</h2>
+        <p class="section-subtitle">We've helped thousands of homeowners across America sell their properties quickly and easily.</p>
+      </div>
+      
+      <div class="trust-indicators">
+        <div class="trust-item">
+          <div class="trust-number">15+</div>
+          <p>Years in Business</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">5,000+</div>
+          <p>Homes Purchased</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">$2B+</div>
+          <p>Paid to Homeowners</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">A+</div>
+          <p>BBB Rating</p>
+        </div>
+      </div>
+      
+      <div class="trust-badges">
+        <div class="badge-item">✓ Verified Real Estate Buyers</div>
+        <div class="badge-item">✓ Licensed & Insured</div>
+        <div class="badge-item">✓ Better Business Bureau Accredited</div>
+        <div class="badge-item">✓ No Obligation Offers</div>
+        <div class="badge-item">✓ Transparent Process</div>
+        <div class="badge-item">✓ Fast Closings</div>
+      </div>
+    </div>
+  </section>
+  
   <!-- CTA Section -->
   <section class="cta-section">
     <div class="container">
@@ -1045,7 +1392,7 @@
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; 2026 TurnedKey Properties. All rights reserved. Licensed Real Estate Buyers.</p>
+        <p>&copy; 2026 TurnedKey Properties. All rights reserved. Verified Real Estate Buyers.</p>
       </div>
     </div>
   </footer>
