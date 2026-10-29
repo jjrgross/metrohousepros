@@ -1,0 +1,15 @@
+# Canonical domain: www -> apex (fixes Search Console "alternate page" flag)
+https://www.metrohousepros.com/* https://metrohousepros.com/:splat 301
+http://www.metrohousepros.com/* https://metrohousepros.com/:splat 301
+http://metrohousepros.com/* https://metrohousepros.com/:splat 301
+
+# Legacy / duplicate URLs flagged in Search Console
+/past-work.html /past-work/ 301
+/contact / 301
+
+# Trailing-slash normalization (matches canonical tags)
+/privacy-policy /privacy-policy/ 301
+/terms /terms/ 301
+/past-work /past-work/ 301
+/sitemap /sitemap/ 301
+/locations /locations/ 301
